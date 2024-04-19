@@ -1,0 +1,134 @@
+import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+pd.set_option('display.max_rows', 400)
+
+df = pd.read_excel('att.xlsx')
+
+df.head()
+-------------------------------------------Planned Absences----------------------------------------------------
+df['Date'] = pd.to_datetime(df['Date'])
+# Set Date column as index
+df.set_index('Date', inplace=True)
+
+# Define the time series data
+ts_data = df['Planned Absences']
+
+# Fit ARIMA model
+arima_model = ARIMA(ts_data, order=(5,1,0))  # Example order, adjust as needed
+arima_fit = arima_model.fit()
+
+# Generate forecasts
+forecast = arima_fit.forecast(steps=365)  # Forecasting 7 days ahead, adjust as needed
+
+# Output the forecast
+print(forecast)
+
+
+mae = mean_absolute_error(ts_data, forecast)
+mse = mean_squared_error(ts_data, forecast)
+rmse = np.sqrt(mse)
+
+print("Mean Absolute Error:", mae)
+print("Mean Squared Error:", mse)
+print("Root Mean Squared Error:", rmse)
+
+
+---------------------------------------------------------------Unplanned Absences-------------------------------------
+
+df['Date'] = pd.to_datetime(df['Date'])
+# Set Date column as index
+df.set_index('Date', inplace=True)
+
+# Define the time series data
+ts_data = df['Unplanned Absences']
+
+# Fit ARIMA model
+arima_model = ARIMA(ts_data, order=(5,1,0))  # Example order, adjust as needed
+arima_fit = arima_model.fit()
+
+# Generate forecasts
+forecast = arima_fit.forecast(steps=365)  # Forecasting 7 days ahead, adjust as needed
+
+# Output the forecast
+print(forecast)
+
+-------------------------------------------------------------------Unpaid Absences---------------------------------
+
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+# Split data into training and testing sets
+train_data = df.iloc[:-30]  # Assuming last 30 days are for testing
+test_data = df.iloc[-30:]
+
+# Define the time series data
+train_ts_data = train_data['Unpaid Absences']
+
+# Fit ARIMA model
+arima_model = ARIMA(train_ts_data, order=(5, 1, 0))  # Example order, adjust as needed
+arima_fit = arima_model.fit()
+
+# Generate forecasts
+forecast = arima_fit.forecast(steps=200)  # Forecasting 30 days ahead, adjust as needed
+
+# Output the forecast
+print("Forecasted values:")
+print(forecast)
+
+# Get actual values for the test period
+actual_values = test_data['Unpaid Absences']
+
+# Calculate error metrics
+mae = mean_absolute_error(actual_values, forecast)
+mse = mean_squared_error(actual_values, forecast)
+rmse = np.sqrt(mse)
+
+print("Mean Absolute Error:", mae)
+print("Mean Squared Error:", mse)
+print("Root Mean Squared Error:", rmse)
+
+
+----------------------------------------------------------------Scheduled Hours---------------------------------
+
+
+df['Date'] = pd.to_datetime(df['Date'])
+# Set Date column as index
+df.set_index('Date', inplace=True)
+
+# Define the time series data
+ts_data = df['Scheduled Hours']
+
+# Fit ARIMA model
+arima_model = ARIMA(ts_data, order=(5,1,0))  # Example order, adjust as needed
+arima_fit = arima_model.fit()
+
+# Generate forecasts
+forecast = arima_fit.forecast(steps=365)  # Forecasting 7 days ahead, adjust as needed
+
+# Output the forecast
+print(forecast)
+
+
+--------------------------------------------------------------Attendance_Rate-------------------------------------
+
+
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Set 'WEEK' column as index
+df.set_index('Date', inplace=True)
+
+# Define the time series data
+ts_data = df['Attendance_Rate']
+
+# Fit ARIMA model
+arima_model = ARIMA(ts_data, order=(5,1,0))  # Example order, adjust as needed
+arima_fit = arima_model.fit()
+
+# Generate forecasts
+forecast = arima_fit.forecast(steps=365)  # Forecasting 365 days ahead
+
+# Output the forecast
+print(forecast)
